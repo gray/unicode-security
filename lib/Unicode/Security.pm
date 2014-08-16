@@ -9,7 +9,7 @@ use Unicode::Security::Confusables;
 use Unicode::Normalize qw(NFD);
 use Unicode::UCD qw(charscript num);
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 $VERSION = eval $VERSION;
 
 our @EXPORT_OK = qw(
