@@ -62,11 +62,11 @@ sub soss {
 # Algorithm described here:
 #   http://www.unicode.org/reports/tr39/#Restriction_Level_Detection
 sub restriction_level {
-    my ($str, $non_xid_regex) = @_;
+    my ($str, $non_id_regex) = @_;
 
-    $non_xid_regex = qr/\P{XID_Continue}/ unless defined $non_xid_regex;
+    $non_id_regex = qr/\P{ID_Continue}/ unless defined $non_id_regex;
 
-    return UNRESTRICTED if $str =~ /$non_xid_regex/;
+    return UNRESTRICTED if $str =~ /$non_id_regex/;
     return ASCII_ONLY   if $str !~ /\P{ASCII}/;
 
     my %soss = soss($str);
@@ -130,10 +130,10 @@ characters in the skeleton are not guaranteed to be identifier characters.
 
 =head2 restriction_level
 
-    $level = restriction_level($string [, $non_xid_regex])
+    $level = restriction_level($string [, $non_id_regex])
 
 Returns the restriction level (0-5) of the string. The default Identifier
-Profile matches against \P{XID_Continue}. If you want to use a different
+Profile matches against B<\P{ID_Continue}>. If you want to use a different
 Identifier Profile, you can pass in an optional regular expression to test for
 non-identifier characters.
 
