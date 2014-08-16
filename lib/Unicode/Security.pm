@@ -7,13 +7,13 @@ use Exporter qw(import);
 
 use Unicode::Security::Confusables;
 use Unicode::Normalize qw(NFD);
-use Unicode::UCD qw(charscript);
+use Unicode::UCD qw(charscript num);
 
 our $VERSION = '0.01';
 $VERSION = eval $VERSION;
 
 our @EXPORT_OK = qw(
-    skeleton confusable soss restriction_level
+    skeleton confusable soss restriction_level mixed_number
 );
 
 our %MA;
@@ -91,6 +91,18 @@ sub restriction_level {
 }
 
 
+sub mixed_number {
+    my %z;
+    for my $char (split //, $_[0]) {
+        my $num = num $char;
+        return unless defined $num;
+        $z{ ord($char) - $num } = \1;
+    }
+
+    return 1 < keys %z;
+}
+
+
 1;
 
 __END__
@@ -144,6 +156,15 @@ non-identifier characters.
 The set of Unicode character script names for a given string. Used internally
 by the restriction level algorithm.
 
+
+=head2 mixed_number
+
+    $truth = mixed_number
+
+Returns true if the string is composed of characters from different decimal
+number systems. Returns undef if the string contains characters other than
+decimal numbers.
+
 =head1 SEE ALSO
 
 L<http://www.unicode.org/reports/tr39/>
@@ -160,9 +181,6 @@ L<http://www.unicode.org/reports/tr39/#Mixed_Script_Confusables>
 
 =item * mixed-script detection
 L<http://www.unicode.org/reports/tr39/#Mixed_Script_Detection>
-
-=item * mixed-number detection
-L<http://www.unicode.org/reports/tr39/#Mixed_Number_Detection>
 
 =back
 
