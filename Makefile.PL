@@ -13,6 +13,7 @@ my %conf = (
         'Unicode::Normalize' => 0,
         'Unicode::UCD'       => 0,
     },
+    MIN_PERL_VERSION => 5.008,
     BUILD_REQUIRES => { 'Test::More' => 0.98, },
     META_MERGE     => {
         resources =>  {
@@ -28,6 +29,7 @@ my $eumm_version =  do {
     eval $ExtUtils::MakeMaker::VERSION;
 };
 delete $conf{META_MERGE} if $eumm_version < 6.46;
+delete $conf{MIN_PERL_VERSION} if $eumm_version < 6.48;
 $conf{PREREQ_PM} = {
     %{ $conf{PREREQ_PM} || {} }, %{ delete $conf{BUILD_REQUIRES} },
 } if ($conf{BUILD_REQUIRES} and $eumm_version < 6.5503);
