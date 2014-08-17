@@ -1,5 +1,8 @@
 Revision history for Unicode-Security
 
+0.03  Sun Aug 17 18:53:13 UTC 2014
+    - Fixed compatibility with Perl <5.14.
+
 0.02  Sat Aug 16 23:33:46 UTC 2014
     - Added mixed_number function.
 
