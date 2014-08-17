@@ -7,7 +7,7 @@ use Exporter qw(import);
 
 use Unicode::Security::Confusables;
 use Unicode::Normalize qw(NFD);
-use Unicode::UCD qw(charscript num);
+use Unicode::UCD qw(charinfo charscript);
 
 our $VERSION = '0.02';
 $VERSION = eval $VERSION;
@@ -94,8 +94,9 @@ sub restriction_level {
 sub mixed_number {
     my %z;
     for my $char (split //, $_[0]) {
-        my $num = num $char;
-        return unless defined $num;
+        my $info = charinfo(ord $char) or return;
+        my $num = $info->{decimal};
+        return unless length $num;
         $z{ ord($char) - $num } = \1;
     }
 
