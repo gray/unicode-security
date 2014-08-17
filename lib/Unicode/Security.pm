@@ -13,7 +13,7 @@ our $VERSION = '0.03';
 $VERSION = eval $VERSION;
 
 our @EXPORT_OK = qw(
-    skeleton confusable soss restriction_level mixed_number
+    skeleton confusable soss restriction_level mixed_script mixed_number
 );
 
 our %MA;
@@ -91,6 +91,13 @@ sub restriction_level {
 }
 
 
+sub mixed_script {
+    my %soss = soss($_[0]);
+    delete @soss{qw(Common Inherited)};
+    return 1 < keys %soss;
+}
+
+
 sub mixed_number {
     my %z;
     for my $char (split //, $_[0]) {
@@ -157,6 +164,11 @@ non-identifier characters.
 The set of Unicode character script names for a given string. Used internally
 by the restriction level algorithm.
 
+=head2 mixed_script
+
+    $truth = mixed_script
+
+Returns true if the string contains mixed scripts.
 
 =head2 mixed_number
 
@@ -179,9 +191,6 @@ L<http://www.unicode.org/reports/tr39/#Whole_Script_Confusables>
 
 =item * mixed-script confusable detection
 L<http://www.unicode.org/reports/tr39/#Mixed_Script_Confusables>
-
-=item * mixed-script detection
-L<http://www.unicode.org/reports/tr39/#Mixed_Script_Detection>
 
 =back
 

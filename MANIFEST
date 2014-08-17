@@ -10,6 +10,7 @@ t/00_compile.t
 t/01_confusable.t
 t/02_restriction_leve.t
 t/03_mixed_number.t
+t/04_mixed_script.t
 xt/kwalitee.t
 xt/perlcritic.t
 xt/perlcriticrc
