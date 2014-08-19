@@ -7,7 +7,7 @@ use Unicode::Security qw(mixed_script);
 my @test = (
     [ "abcdef",            '' ],
     [ "abc-def",           '' ],
-    [ "\x{1F4A7}\x{203C}", '' ],
+    [ "\x{267C}\x{203C}",  '' ],
     [ "abc-\x{0BF6}ef",    1 ],
 );
 
