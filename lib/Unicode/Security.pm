@@ -14,9 +14,11 @@ $VERSION = eval $VERSION;
 
 our @EXPORT_OK = qw(
     skeleton confusable soss restriction_level mixed_script mixed_number
+    whole_script_confusable mixed_script_confusable
+    ws_confusable ms_confusable
 );
 
-our %MA;
+our (%MA, %WS);
 
 use constant {
     UNRESTRICTED           => 0,
@@ -55,9 +57,80 @@ sub confusable {
 }
 
 
+# Algorithm described here:
+#   http://www.unicode.org/reports/tr39/#Whole_Script_Confusables
+sub whole_script_confusable {
+    my ($target, $str) = @_;
+
+    # Canonicalize the script name to match the format used in %WS.
+    $target = ucfirst lc $target;
+
+    my %soss; $soss{ charscript(ord($_)) }{$_} = \1 for split //, NFD $str;
+    delete @soss{qw(Common Inherited)};
+
+    my $count = keys %soss or return '';
+    return if 1 < $count;
+    my ($source) = keys %soss;
+
+    my $chars = $WS{$source}{$target};
+    do { return 1 if $chars->{$_} } for keys %{ $soss{$source} };
+}
+*ws_confusable = *ws_confusable = \&whole_script_confusable;
+
+
+# Algorithm described here:
+#   http://www.unicode.org/reports/tr39/#Mixed_Script_Confusables
+sub mixed_script_confusable {
+    my %soss; $soss{ charscript(ord($_)) }{$_} = \1 for split //, NFD $_[0];
+    delete @soss{qw(Common Inherited)};
+
+    my @soss = keys %soss;
+    for my $source (@soss) {
+        my $sum = 0;
+        for my $target (@soss) {
+            next if $target eq $source;
+
+            my $nok = 0;
+            my $chars = $WS{$target}{$source};
+            for my $char (keys %{ $soss{$target} }) {
+                $nok = 1, last unless $chars->{$char};
+            }
+            last if $nok;
+            $sum++;
+        }
+
+        return 1 if 1 == @soss - $sum;
+    }
+
+    return '';
+}
+*ms_confusable = *ms_confusable = \&mixed_script_confusable;
+
+
 sub soss {
     return map { charscript(ord($_)) => \1 } split //, $_[0];
 }
+
+
+sub mixed_script {
+    my %soss = soss($_[0]);
+    delete @soss{qw(Common Inherited)};
+    return 1 < keys %soss;
+}
+
+
+sub mixed_number {
+    my %z;
+    for my $char (split //, $_[0]) {
+        my $info = charinfo(ord $char) or return;
+        my $num = $info->{decimal};
+        return unless length $num;
+        $z{ ord($char) - $num } = \1;
+    }
+
+    return 1 < keys %z;
+}
+
 
 # Algorithm described here:
 #   http://www.unicode.org/reports/tr39/#Restriction_Level_Detection
@@ -91,26 +164,6 @@ sub restriction_level {
 }
 
 
-sub mixed_script {
-    my %soss = soss($_[0]);
-    delete @soss{qw(Common Inherited)};
-    return 1 < keys %soss;
-}
-
-
-sub mixed_number {
-    my %z;
-    for my $char (split //, $_[0]) {
-        my $info = charinfo(ord $char) or return;
-        my $num = $info->{decimal};
-        return unless length $num;
-        $z{ ord($char) - $num } = \1;
-    }
-
-    return 1 < keys %z;
-}
-
-
 1;
 
 __END__
@@ -121,9 +174,13 @@ Unicode::Security - Unicode security mechanisms
 
 =head1 SYNOPSIS
 
-    use Unicode::Security qw(confusable restriction_level)
+    use Unicode::Security qw(confusable restriction_level);
 
     $truth = confusable($string1, $string2);
+    $truth = whole_script_confusable($script, $string);
+    $truth = mixed_script_confusable($string);
+    $truth = mixed_script($string);
+    $truth = mixed_number($digits);
     $level = restriction_level($string);
 
 =head1 DESCRIPTION
@@ -135,9 +192,26 @@ Technical Standard #39.
 
 =head2 confusable
 
-    $truth = confusable($string1, $string2)
+    $truth = confusable($string1 [, $string2])
 
-Returns true if if the two strings are confusable.
+Returns true if the two strings are visually confusable.
+
+=head2 whole_script_confusable
+
+=head2 ws_confusable
+
+    $truth = whole_script_confusable($script, $string)
+
+Returns true if the string is whole-script confusable within the given script.
+Returns undef if the string contains multiple scripts.
+
+=head2 mixed_script_confusable
+
+=head2 ms_confusable
+
+    $truth = mixed_script_confusable($string)
+
+Returns true if the string is mixed-script confusable.
 
 =head2 skeleton
 
@@ -166,13 +240,13 @@ by the restriction level algorithm.
 
 =head2 mixed_script
 
-    $truth = mixed_script
+    $truth = mixed_script($string)
 
 Returns true if the string contains mixed scripts.
 
 =head2 mixed_number
 
-    $truth = mixed_number
+    $truth = mixed_number($digits)
 
 Returns true if the string is composed of characters from different decimal
 number systems. Returns undef if the string contains characters other than
@@ -181,18 +255,6 @@ decimal numbers.
 =head1 SEE ALSO
 
 L<http://www.unicode.org/reports/tr39/>
-
-=head1 TODO
-
-=over
-
-=item * whole-script confusable detection
-L<http://www.unicode.org/reports/tr39/#Whole_Script_Confusables>
-
-=item * mixed-script confusable detection
-L<http://www.unicode.org/reports/tr39/#Mixed_Script_Confusables>
-
-=back
 
 =head1 REQUESTS AND BUGS
 
