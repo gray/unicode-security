@@ -174,7 +174,10 @@ Unicode::Security - Unicode security mechanisms
 
 =head1 SYNOPSIS
 
-    use Unicode::Security qw(confusable restriction_level);
+    use Unicode::Security qw(
+        confusable restriction_level whole_script_confusable
+        mixed_script_confusable mixed_script mixed_number
+    );
 
     $truth = confusable($string1, $string2);
     $truth = whole_script_confusable($script, $string);
@@ -192,7 +195,7 @@ Technical Standard #39.
 
 =head2 confusable
 
-    $truth = confusable($string1 [, $string2])
+    $truth = confusable($string1,  $string2)
 
 Returns true if the two strings are visually confusable.
 
