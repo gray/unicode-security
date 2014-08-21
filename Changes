@@ -1,5 +1,8 @@
 Revision history for Unicode-Security
 
+0.06  Thu Aug 21 19:20:26 UTC 2014
+    - Updated mixed_number to not bail on non-numeric characters.
+
 0.05  Tue Aug 19 15:42:43 UTC 2014
     - Handle unknown characters.
     - Fixed tests for Perl 5.8; use characters from Unicode 3.2.
