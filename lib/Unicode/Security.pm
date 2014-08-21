@@ -13,7 +13,8 @@ our $VERSION = '0.05';
 $VERSION = eval $VERSION;
 
 our @EXPORT_OK = qw(
-    skeleton confusable soss restriction_level mixed_script mixed_number
+    skeleton confusable soss restriction_level mixed_script
+    mixed_number mixed_num
     whole_script_confusable mixed_script_confusable
     ws_confusable ms_confusable
 );
@@ -128,14 +129,17 @@ sub mixed_script {
 sub mixed_number {
     my %z;
     for my $char (split //, $_[0]) {
-        my $info = charinfo(ord $char) or return;
+        my $info = charinfo(ord $char) or next;
+
         my $num = $info->{decimal};
-        return unless length $num;
+        next unless length $num;
+
         $z{ ord($char) - $num } = \1;
     }
 
     return 1 < keys %z;
 }
+*mixed_num = *mixed_num = \&mixed_number;
 
 
 # Algorithm described here:
@@ -255,11 +259,12 @@ Returns true if the string contains mixed scripts.
 
 =head2 mixed_number
 
-    $truth = mixed_number($digits)
+=head2 mixed_num
+
+    $truth = mixed_number($string)
 
 Returns true if the string is composed of characters from different decimal
-number systems. Returns undef if the string contains characters other than
-decimal numbers.
+number systems.
 
 =head1 SEE ALSO
 
