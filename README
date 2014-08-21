@@ -16,6 +16,7 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
+    perl 5.8
     Test::More
     Unicode::Normalize
     Unicode::UCD
