@@ -93,10 +93,11 @@ sub write_file {
     for my $source (sort keys %WS) {
         print $fh qq(    '$source' => {\n);
         for my $target (sort keys %{$WS{$source}}) {
-            printf $fh qq(        '%s' => { map { \$_ => \\1 } %s },\n),
-                $target,
-                join ', ', map { qq("\\x{$_}") }
-                    sort keys %{$WS{$source}{$target}};
+            my @c = map { qq("\\x{$_}") } keys %{$WS{$source}{$target}};
+            printf $fh qq(        '%s' => { %s },\n), $target,
+                1 == @c
+                    ? "$c[0] => \\1"
+                    : 'map { $_ => \1 } ' . join(', ', @c);
         }
         print $fh qq(    },\n);
     }
