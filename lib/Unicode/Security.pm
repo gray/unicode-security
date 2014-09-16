@@ -193,7 +193,7 @@ Unicode::Security - Unicode security mechanisms
     $truth = whole_script_confusable($script, $string);
     $truth = mixed_script_confusable($string);
     $truth = mixed_script($string);
-    $truth = mixed_number($digits);
+    $truth = mixed_number($string);
     $level = restriction_level($string);
 
 =head1 DESCRIPTION
