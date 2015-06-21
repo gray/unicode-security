@@ -1,5 +1,8 @@
 Revision history for Unicode-Security
 
+0.08  Sun Jun 21 00:48:36 UTC 2015
+    - Updated confusable data to support Unicode 8.0.
+
 0.07  Wed May 20 06:07:22 UTC 2015
     - Updated confusable data to support Unicode 7.0.
 
